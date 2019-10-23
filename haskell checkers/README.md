@@ -13,8 +13,8 @@ To set up the program, you must have
 bash commands will clone the git repository and build the stack project.
 
 ``` shell
-git clone https://github.com/benjamin-macadam/Haskell-Checkers-Frontend.git
-cd Haskell-Checkers-Frontend
+git clone https://github.com/JuandeReiset/CPSC-449-Programming-Paradigms.git
+cd haskell checkers
 stack build
 ```
 You can also download the project as a zip file from the github page and run
