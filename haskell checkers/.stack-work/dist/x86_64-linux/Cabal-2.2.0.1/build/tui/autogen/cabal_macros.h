@@ -22,6 +22,17 @@
   (major1) == 4 && (major2) == 11 && (minor) <= 1)
 #endif /* MIN_VERSION_base */
 
+/* package microlens-platform-0.3.10 */
+#ifndef VERSION_microlens_platform
+#define VERSION_microlens_platform "0.3.10"
+#endif /* VERSION_microlens_platform */
+#ifndef MIN_VERSION_microlens_platform
+#define MIN_VERSION_microlens_platform(major1,major2,minor) (\
+  (major1) <  0 || \
+  (major1) == 0 && (major2) <  3 || \
+  (major1) == 0 && (major2) == 3 && (minor) <= 10)
+#endif /* MIN_VERSION_microlens_platform */
+
 /* package tui-0.0.0.1 */
 #ifndef VERSION_tui
 #define VERSION_tui "0.0.0.1"
