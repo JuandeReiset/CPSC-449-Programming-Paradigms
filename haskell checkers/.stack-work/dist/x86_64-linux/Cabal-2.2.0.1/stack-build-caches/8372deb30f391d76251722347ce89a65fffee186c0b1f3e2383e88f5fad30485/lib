@@ -3,13 +3,17 @@
   size: 511
   modtime: 1572241662
 /home/grantmyth/CPSC-449-Programming-Paradigms/haskell checkers/src/GameLogic.hs:
-  hash: afb7915944c1fa80d4b12c170336b89cf69b94fffaf6584bd5cf8e840a12a705
-  size: 1751
-  modtime: 1572242062
+  hash: bd58e67962cbc91bd791df231cf5409d7a073f23fefe67a3db0b75094b9433ac
+  size: 1728
+  modtime: 1572243695
 /home/grantmyth/CPSC-449-Programming-Paradigms/haskell checkers/tui.cabal:
-  hash: 3305addf814ccccae982660df683ebf118e4d1eeb15e58ef4800efe53977de91
-  size: 1103
-  modtime: 1572241667
+  hash: d04da24b09a9da9bb4e4fdfdee24197d7518e4a8550023cdda1528b08e7b1cdd
+  size: 1115
+  modtime: 1572281380
+/home/grantmyth/CPSC-449-Programming-Paradigms/haskell checkers/src/Moves.hs:
+  hash: fe7f0920988ac68a9ffe3eb7fbb0157d03bef065b18bb27fddf9b9166a58ef3e
+  size: 195
+  modtime: 1572281546
 /home/grantmyth/CPSC-449-Programming-Paradigms/haskell checkers/src/Checkers.hs:
   hash: 0c01b5da0202978a16647b8709a58da9fa9eae31242928fc17bb74eee34d38ba
   size: 10243

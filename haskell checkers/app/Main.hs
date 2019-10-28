@@ -14,33 +14,27 @@ applyTHEMove m s = case s^.status of
  Red -> if ((islegal s m)&&(m `elem` (simple_moves s)) &&(is_there (jump_moves s)))
          then set message "There is a jump move available" s
          else if ((islegal s m)&&(m `elem` (simple_moves s)) && (not(is_there (jump_moves s)))) 
-         then if ((head m)`elem`(s^.redPieces)) 
+         then if ((head m)`elem`(_redPieces s)) 
                then toogle_status $ apply_simple_move s m
                else toogle_status $ applyK_simple_move s m
          else if ((islegal s m)&&(m `elem` (jump_moves s)))
-            then if ((head m)`elem`(s^.redPieces) || (head m)`elem`(s^.redKings))
+            then if ((head m)`elem`(_redPieces s) || (head m)`elem`(_redKings s))
                   then toogle_status $ apply_jump_move m s
                   else toogle_status $ apply_jump_move m s
         else set message "Invalid move" s
  Black -> if ((islegal s m)&&(m `elem` (simple_moves s)) &&(is_there (jump_moves s)))
            then set message "There is a jump move available" s
            else if ((islegal s m)&&(m `elem` (simple_moves s)) && (not(is_there (jump_moves s)))) 
-           then if ((head m)`elem`(s^.blackPieces)) 
+           then if ((head m)`elem`(_blackPieces s)) 
                then toogle_status $ apply_simple_move s m
                else toogle_status $ applyK_simple_move s m
           else if ((islegal s m)&&(m `elem` (jump_moves s)))
-           then if ((head m)`elem`(s^.blackPieces) || (head m)`elem`(s^.blackKings))
+           then if ((head m)`elem`(_blackPieces s) || (head m)`elem`(_blackKings s))
                then toogle_status $ apply_jump_move m s
                else toogle_status $ apply_jump_move m s
         else set message "Invalid move" s
  _ -> initialGameState
 
- {-
-applyMove _  s = case s^.status of
-  Red -> setMessage $ set status Black s
-  Black -> setMessage $ set status Red s
-  _ -> initialGameState
- -}
 
 --DECIDE AND DETERMINE IF MOVE IS LEGAL
 --all possible moves
@@ -55,7 +49,7 @@ simple_moves s = case s^.status of
 
 --all possible simple moves for red
 rsimple_moves::GameState-> [Move]
-rsimple_moves s = (rpawn_moves s  (s^.redPieces) [])++(rking_moves s (s^.redKings) [])
+rsimple_moves s = (rpawn_moves s  (_redPieces s) [])++(rking_moves s (_redKings s) [])
 
 --all possible simple moves for red pawns
 rpawn_moves::GameState->[Coord]->[Move]->[Move]
@@ -108,7 +102,7 @@ rking_moves s ((x,y):rest) m
  
 --all possible simple moves for black
 bsimple_moves::GameState->[Move]
-bsimple_moves s = (bpawn_moves s  (s^.blackPieces) [])++(bking_moves s (s^.blackKings) [])
+bsimple_moves s = (bpawn_moves s  (_blackPieces s) [])++(bking_moves s (_blackKings s) [])
 
 bpawn_moves::GameState->[Coord]->[Move]->[Move]
 bpawn_moves s [] m = m
@@ -314,40 +308,40 @@ islegal s m
 --Diagonal simple movement helpers---------------
 is_up_right_empty::GameState -> Coord -> Bool
 is_up_right_empty s (x,y)
- |not((x+1, y-1) `elem` s^.redPieces) &&
-  not((x+1, y-1) `elem` s^.redKings) &&
-  not((x+1, y-1) `elem` s^.blackPieces) &&
-  not((x+1, y-1) `elem` s^.blackKings) &&
+ |not((x+1, y-1) `elem` (_redPieces s)) &&
+  not((x+1, y-1) `elem` (_redKings s)) &&
+  not((x+1, y-1) `elem` (_blackPieces s)) &&
+  not((x+1, y-1) `elem` (_blackKings s)) &&
   (x+1 <= 7)
   = True
  |otherwise = False
 
 is_up_left_empty::GameState -> Coord -> Bool
 is_up_left_empty s (x,y)
- |not((x-1, y-1) `elem` s^.redPieces) &&
-  not((x-1, y-1) `elem` s^.redKings) &&
-  not((x-1, y-1) `elem` s^.blackPieces) &&
-  not((x-1, y-1) `elem` s^.blackKings) &&
+ |not((x-1, y-1) `elem` (_redPieces s)) &&
+  not((x-1, y-1) `elem` (_redKings s)) &&
+  not((x-1, y-1) `elem` (_blackPieces s)) &&
+  not((x-1, y-1) `elem` (_blackKings s)) &&
   (x-1 >= 0)
   = True
  |otherwise = False
 
 is_down_right_empty::GameState -> Coord -> Bool
 is_down_right_empty s (x,y)
- |not((x+1, y+1) `elem` s^.redPieces) &&
-  not((x+1, y+1) `elem` s^.redKings) &&
-  not((x+1, y+1) `elem` s^.blackPieces) &&
-  not((x+1, y+1) `elem` s^.blackKings) &&
+ |not((x+1, y+1) `elem` (_redPieces s)) &&
+  not((x+1, y+1) `elem` (_redKings s)) &&
+  not((x+1, y+1) `elem` (_blackPieces s)) &&
+  not((x+1, y+1) `elem` (_blackKings s)) &&
   (x+1 <= 7)
   = True
  |otherwise = False
 
 is_down_left_empty::GameState -> Coord -> Bool
 is_down_left_empty s (x,y)
- |not((x-1, y+1) `elem` s^.redPieces) &&
-  not((x-1, y+1) `elem` s^.redKings) &&
-  not((x-1, y+1) `elem` s^.blackPieces) &&
-  not((x-1, y+1) `elem` s^.blackKings) &&
+ |not((x-1, y+1) `elem` (_redPieces s)) &&
+  not((x-1, y+1) `elem` (_redKings s)) &&
+  not((x-1, y+1) `elem` (_blackPieces s)) &&
+  not((x-1, y+1) `elem` (_blackKings s)) &&
   (x-1 >= 0)
   = True
  |otherwise = False
@@ -359,15 +353,15 @@ is_down_left_empty s (x,y)
 opponent_occupied::Coord->GameState->Bool
 opponent_occupied (x,y) s
  | s^.status == Red
- = if(((x, y) `elem` s^.blackPieces) || ((x, y) `elem` s^.blackKings))
+ = if(((x, y) `elem` (_blackPieces s)) || ((x, y) `elem` (_blackKings s)))
     then True
     else False
  |s^.status == Black
- = if(((x, y) `elem` s^.redPieces) || ((x, y) `elem` s^.redKings))
+ = if(((x, y) `elem` (_redPieces s)) || ((x, y) `elem` (_redKings s)))
     then True
     else False
  |otherwise = False
-
+{-
 notoccupied::Coord->GameState->Bool
 notoccupied (x,y) s 
  | s^.status == Red
@@ -379,7 +373,7 @@ notoccupied (x,y) s
     then  False
     else  True
  |otherwise = False
-
+-}
 onboard::Coord->Bool
 onboard (x,y)
  |(x>=0) && (x<=7) && (y<=7) && (x>=0)
@@ -389,80 +383,80 @@ onboard (x,y)
 is_up_right_jump_possible::GameState-> Coord ->Bool
 is_up_right_jump_possible s (x,y)
  |(s^.status == Red) &&
-  not((x+2, y-2) `elem` s^.redPieces) &&
-  not((x+2, y-2) `elem` s^.redKings) &&
-  not((x+2, y-2) `elem` s^.blackPieces) &&
-  not((x+2, y-2) `elem` s^.blackKings) &&
+  not((x+2, y-2) `elem` (_redPieces s)) &&
+  not((x+2, y-2) `elem` (_redKings s)) &&
+  not((x+2, y-2) `elem` (_blackPieces s)) &&
+  not((x+2, y-2) `elem` (_blackKings s)) &&
   (x+2 <= 7) && (y-2 >= 0) &&
-  ((x+1, y-1) `elem` (s^.blackPieces ) || (x+1, y-1) `elem` (s^.blackKings ))
+  ((x+1, y-1) `elem` (_blackPieces s) || (x+1, y-1) `elem` (_blackKings s))
   = True
   |(s^.status == Black) &&
-  not((x+2, y-2) `elem` s^.redPieces) &&
-  not((x+2, y-2) `elem` s^.redKings) &&
-  not((x+2, y-2) `elem` s^.blackPieces) &&
-  not((x+2, y-2) `elem` s^.blackKings) &&
+  not((x+2, y-2) `elem` (_redPieces s)) &&
+  not((x+2, y-2) `elem` (_redKings s)) &&
+  not((x+2, y-2) `elem` (_blackPieces s)) &&
+  not((x+2, y-2) `elem` (_blackKings s)) &&
   (x+2 <= 7) && (y-2 >= 0) &&
-  ((x+1, y-1) `elem` (s^.redPieces ) || (x+1, y-1) `elem` (s^.redKings ))
+  ((x+1, y-1) `elem` (_redPieces s) || (x+1, y-1) `elem` (_redKings s ))
   = True
   |otherwise = False
 
 is_up_left_jump_possible::GameState-> Coord ->Bool
 is_up_left_jump_possible s (x,y)
  |(s^.status == Red) && 
-  not((x-2, y-2) `elem` s^.redPieces) &&
-  not((x-2, y-2) `elem` s^.redKings) &&
-  not((x-2, y-2) `elem` s^.blackPieces) &&
-  not((x-2, y-2) `elem` s^.blackKings) &&
+  not((x-2, y-2) `elem` (_redPieces s)) &&
+  not((x-2, y-2) `elem` (_redKings s)) &&
+  not((x-2, y-2) `elem` (_blackPieces s)) &&
+  not((x-2, y-2) `elem` (_blackKings s)) &&
   (x-2 >= 0) && (y-2 >= 0) &&
-  ((x-1, y-1) `elem` (s^.blackPieces ) || (x-1, y-1) `elem` (s^.blackKings ))
+  ((x-1, y-1) `elem` (_blackPieces s) || (x-1, y-1) `elem` (_blackKings s))
   = True
  |(s^.status == Black) && 
-  not((x-2, y-2) `elem` s^.redPieces) &&
-  not((x-2, y-2) `elem` s^.redKings) &&
-  not((x-2, y-2) `elem` s^.blackPieces) &&
-  not((x-2, y-2) `elem` s^.blackKings) &&
+  not((x-2, y-2) `elem` (_redPieces s)) &&
+  not((x-2, y-2) `elem` (_redKings s)) &&
+  not((x-2, y-2) `elem` (_blackPieces s)) &&
+  not((x-2, y-2) `elem` (_blackKings s)) &&
   (x-2 >= 0) && (y-2 >= 0) &&
-  ((x-1, y-1) `elem` (s^.redPieces ) || (x-1, y-1) `elem` (s^.redKings ))
+  ((x-1, y-1) `elem` (_redPieces s ) || (x-1, y-1) `elem` (_redKings s))
   = True
   |otherwise = False
   
 is_down_left_jump_possible::GameState-> Coord ->Bool
 is_down_left_jump_possible s (x,y)
  |(s^.status == Red) && 
-  not((x-2, y+2) `elem` s^.redPieces) &&
-  not((x-2, y+2) `elem` s^.redKings) &&
-  not((x-2, y+2) `elem` s^.blackPieces) &&
-  not((x-2, y+2) `elem` s^.blackKings) &&
+  not((x-2, y+2) `elem` (_redPieces s)) &&
+  not((x-2, y+2) `elem` (_redKings s)) &&
+  not((x-2, y+2) `elem` (_blackPieces s)) &&
+  not((x-2, y+2) `elem` (_blackKings s)) &&
   (x-2 >= 0) && (y+2 <= 7) &&
-  ((x-1, y+1) `elem` (s^.blackPieces ) || (x-1, y+1) `elem` (s^.blackKings ))
+  ((x-1, y+1) `elem` (_blackPieces s) || (x-1, y+1) `elem` (_blackKings s))
   = True
  |(s^.status == Black) && 
-  not((x-2, y+2) `elem` s^.redPieces) &&
-  not((x-2, y+2) `elem` s^.redKings) &&
-  not((x-2, y+2) `elem` s^.blackPieces) &&
-  not((x-2, y+2) `elem` s^.blackKings) &&
+  not((x-2, y+2) `elem` (_redPieces s)) &&
+  not((x-2, y+2) `elem` (_redKings s)) &&
+  not((x-2, y+2) `elem` (_blackPieces s)) &&
+  not((x-2, y+2) `elem` (_blackKings s)) &&
   (x-2 >= 0) && (y+2 <= 7) &&
-  ((x-1, y+1) `elem` (s^.redPieces ) || (x-1, y+1) `elem` (s^.redKings ))
+  ((x-1, y+1) `elem` (_redPieces s ) || (x-1, y+1) `elem` (_redKings s ))
   = True
   |otherwise = False
 
 is_down_right_jump_possible::GameState-> Coord ->Bool
 is_down_right_jump_possible s (x,y)
  |(s^.status == Red) &&
-  not((x+2, y+2) `elem` s^.redPieces) &&
-  not((x+2, y+2) `elem` s^.redKings) &&
-  not((x+2, y+2) `elem` s^.blackPieces) &&
-  not((x+2, y+2) `elem` s^.blackKings) &&
+  not((x+2, y+2) `elem` (_redPieces s)) &&
+  not((x+2, y+2) `elem` (_redKings s)) &&
+  not((x+2, y+2) `elem` (_blackPieces s)) &&
+  not((x+2, y+2) `elem` (_blackKings s)) &&
   (x+2 <= 7) && (y+2 <= 7) &&
-  ((x+1, y+1) `elem` (s^.blackPieces ) || (x+1, y+1) `elem` (s^.blackKings ))
+  ((x+1, y+1) `elem` (_blackPieces s) || (x+1, y+1) `elem` (_blackKings s))
   = True
   |(s^.status == Black) &&
-  not((x+2, y+2) `elem` s^.redPieces) &&
-  not((x+2, y+2) `elem` s^.redKings) &&
-  not((x+2, y+2) `elem` s^.blackPieces) &&
-  not((x+2, y+2) `elem` s^.blackKings) &&
+  not((x+2, y+2) `elem` (_redPieces s)) &&
+  not((x+2, y+2) `elem` (_redKings s))  &&
+  not((x+2, y+2) `elem` (_blackPieces s)) &&
+  not((x+2, y+2) `elem` (_blackKings s)) &&
   (x+2 <= 7) && (y+2 <= 7) &&
-  ((x+1, y+1) `elem` (s^.redPieces ) || (x+1, y+1) `elem` (s^.redKings ))
+  ((x+1, y+1) `elem` (_redPieces s ) || (x+1, y+1) `elem` (_redKings s))
   = True
   |otherwise = False
 ------------------------------------------
