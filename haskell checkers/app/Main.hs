@@ -5,17 +5,17 @@ import Checkers
 --import GameLogic
 import Lens.Micro.Platform
 import Moves
-import GameLogic
+
 
 main :: IO ()
---main = human applyTHEMove initialGameState
+main = human applyTHEMove initialGameState
 --main = moves initialGameState
-main = tui
- {-
+--main = tui
+ 
 applyTHEMove :: Move -> GameState -> GameState
-applyTHEMove m s = case s^.status of
+applyTHEMove m s = case (_status s) of
  Red -> if ((islegal s m)&&(m `elem` (simple_moves s)) &&(is_there (jump_moves s)))
-         then set message "There is a jump move available" s
+         then s{ _message = "There is a jump move available"}
          else if ((islegal s m)&&(m `elem` (simple_moves s)) && (not(is_there (jump_moves s)))) 
          then if ((head m)`elem`(_redPieces s)) 
                then toogle_status $ apply_simple_move s m
@@ -24,9 +24,9 @@ applyTHEMove m s = case s^.status of
             then if ((head m)`elem`(_redPieces s) || (head m)`elem`(_redKings s))
                   then toogle_status $ apply_jump_move m s
                   else toogle_status $ apply_jump_move m s
-        else set message "Invalid move" s
+        else s{ _message= "Invalid move" }
  Black -> if ((islegal s m)&&(m `elem` (simple_moves s)) &&(is_there (jump_moves s)))
-           then set message "There is a jump move available" s
+           then s{ _message = "There is a jump move available"}
            else if ((islegal s m)&&(m `elem` (simple_moves s)) && (not(is_there (jump_moves s)))) 
            then if ((head m)`elem`(_blackPieces s)) 
                then toogle_status $ apply_simple_move s m
@@ -35,75 +35,78 @@ applyTHEMove m s = case s^.status of
            then if ((head m)`elem`(_blackPieces s) || (head m)`elem`(_blackKings s))
                then toogle_status $ apply_jump_move m s
                else toogle_status $ apply_jump_move m s
-        else set message "Invalid move" s
+        else s{ _message= "Invalid move" }
  _ -> initialGameState
 
 
- 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-{-
 islegal::GameState->Move->Bool
 islegal s [] = False
 islegal s m
  | m `elem` (moves s)  = True 
  | otherwise = False
--}
-
-
-
-
-
-
 
 
 --Movement helper functions-------------------------------
 apply_simple_move::GameState->Move->GameState
-apply_simple_move s m = case s^.status of
- Red-> if((head(tail m)) `elem` firstRow)
-        then setMessage $ set status Black $ set redPieces ((removePiece (s^.redPieces) (head m))) $ set redKings ((head(tail m)):(s^.redKings)) s
-        else setMessage $ set status Black $ set redPieces ((head(tail m)):(removePiece (s^.redPieces) (head m))) s
- Black->if((head(tail m)) `elem` lastRow)
-        then setMessage $ set status Red $ set blackPieces ((removePiece (s^.blackPieces) (head m))) $ set blackKings ((head(tail m)):(s^.blackKings)) s
-        else setMessage $ set status Red $ set blackPieces ((head(tail m)):(removePiece (s^.blackPieces) (head m))) s
+apply_simple_move s m = case (_status s) of
+ Red-> if((head(tail m)) `elem` fRow)
+        then s{_message = "Black turn",
+               _status = Black ,
+               _redPieces = ((removePiece (_redPieces) (head m))) ,
+               _redKings = ((head(tail m)):(_redKings)) }
+        else s{_message = "Black turn" , 
+               _status = Black ,
+               _redPieces = ((head(tail m)):(removePiece (_redPieces) (head m))) }
+ Black->if((head(tail m)) `elem` lRow)
+        then s{ _message = "Red turn" ,
+                _status = Red ,
+                _blackPieces = ((removePiece (_blackPieces) (head m))) ,
+                _blackKings = ((head(tail m)):(_blackKings)) }
+        else s{_message = "Red turn " ,
+               _status = Red ,
+               _blackPieces =((head(tail m)):(removePiece (_blackPieces) (head m))) }
 
 applyK_simple_move::GameState->Move->GameState
 applyK_simple_move s m = case s^.status of
- Red->setMessage $ set status Black $ set redKings ((head(tail m)):(removePiece (s^.redKings) (head m))) s
- Black-> setMessage $ set status Red $ set blackKings ((head(tail m)):(removePiece (s^.blackKings) (head m))) s
+ Red-> s{_message = "Black turn" , 
+         _status = Black ,
+         _redKings = ((head(tail m)):(removePiece (_redKings) (head m))) }
+ Black-> s{ _message = "Red turn",
+            _status = Red ,
+            _blackKings = ((head(tail m)):(removePiece (_blackKings) (head m))) }
 
 apply_jump_move::Move->GameState->GameState
 apply_jump_move [] s = s
 apply_jump_move ((x,y):[]) s = s
 apply_jump_move ((x,y):(x2,y2):ms) s
- | ((_status s) == Red) && ((x,y) `elem` (_redPieces s)) && not(((x2,y2) `elem` firstRow))
+ | ((_status s) == Red) && ((x,y) `elem` (_redPieces s)) && not(((x2,y2) `elem` fRow))
   = setMessage $ set status Black $ apply_jump_move ((x2,y2):ms) $ set blackKings (removePiece (s^.blackKings) (mid_jump_coord (x,y)(x2,y2)) ) $ set blackPieces (removePiece (s^.blackPieces) (mid_jump_coord (x,y)(x2,y2)) ) $ set redPieces ((x2,y2):(removePiece (s^.redPieces) (x,y) )) s
- | ((_status s) == Red) && ((x,y) `elem` (_redPieces s)) && ((x2,y2) `elem` firstRow)
+ | ((_status s) == Red) && ((x,y) `elem` (_redPieces s)) && ((x2,y2) `elem` fRow)
   = setMessage $ set status Black $ apply_jump_move ((x2,y2):ms) $ set blackKings (removePiece (s^.blackKings) (mid_jump_coord (x,y)(x2,y2)) ) $ set blackPieces (removePiece (s^.blackPieces) (mid_jump_coord (x,y)(x2,y2)) ) $ set redPieces ((removePiece (s^.redPieces) (x,y) )) $ set redKings ((x2,y2):(removePiece (_redKings s) (x,y))) s
  | ((_status s) == Red) && ((x,y) `elem` (_redKings s))
   = setMessage $ set status Black $ apply_jump_move ((x2,y2):ms) $ set blackKings (removePiece (s^.blackKings) (mid_jump_coord (x,y)(x2,y2)) ) $ set blackPieces (removePiece (s^.blackPieces) (mid_jump_coord (x,y)(x2,y2)) ) $ set redKings ((x2,y2):(removePiece (s^.redKings) (x,y) )) s
  
- | ((_status s) == Black) && ((x,y) `elem` (_blackPieces s)) && not(((x2,y2) `elem` lastRow))
+ | ((_status s) == Black) && ((x,y) `elem` (_blackPieces s)) && not(((x2,y2) `elem` lRow))
   = setMessage $ set status Red $ apply_jump_move ((x2,y2):ms) $ set redKings (removePiece (s^.redKings) (mid_jump_coord (x,y)(x2,y2)) ) $ set redPieces (removePiece (s^.redPieces) (mid_jump_coord (x,y)(x2,y2)) ) $ set blackPieces ((x2,y2):(removePiece (s^.blackPieces) (x,y) )) s
- | ((_status s) == Black) && ((x,y) `elem` (_blackPieces s)) && ((x2,y2) `elem` lastRow)
+ | ((_status s) == Black) && ((x,y) `elem` (_blackPieces s)) && ((x2,y2) `elem` lRow)
   = setMessage $ set status  Red $ apply_jump_move ((x2,y2):ms) $ set redKings (removePiece (s^.redKings) (mid_jump_coord (x,y)(x2,y2)) ) $ set redPieces (removePiece (s^.redPieces) (mid_jump_coord (x,y)(x2,y2)) ) $ set blackPieces ((removePiece (s^.blackPieces) (x,y) )) $ set blackKings ((x2,y2):(removePiece (_blackKings s) (x,y))) s
  | ((_status s) == Black) && ((x,y) `elem` (_blackKings s))
   = setMessage $ set status Red $ apply_jump_move ((x2,y2):ms) $ set redKings (removePiece (s^.redKings) (mid_jump_coord (x,y)(x2,y2)) ) $ set redPieces (removePiece (s^.redPieces) (mid_jump_coord (x,y)(x2,y2)) ) $ set blackKings ((x2,y2):(removePiece (s^.blackKings) (x,y) )) s
  |otherwise =  apply_jump_move [] s
 ---------------------------------------
 
+toogle_status::GameState->GameState
+toogle_status s
+ |((not(is_there (_redPieces s))) && (not(is_there (_redKings s)))) || (not(is_there (moves s))) = s{_message = "Gameover",
+                                                                                                     _status = GameOver}
+ |((not(is_there (_blackPieces s))) && (not(is_there (_blackKings s)))) || (not(is_there (moves s))) = s{_message = "Gameover",
+                                                                                                         _status = GameOver}
+ | otherwise = s
 
--}
+
+
+
+fRow = [(0,0), (1,0),(2,0), (3,0),(4,0) ,(5,0),(6,0), (7,0)]
+lRow  = [ (0,7), (1,7),(2,7),(3,7), (4,7), (5,7),(6,7), (7,7)]
+
+
