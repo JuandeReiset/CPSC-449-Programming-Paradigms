@@ -2,10 +2,10 @@ module Main where
 
 --import Tui
 import Checkers
---import GameLogic
+import GameLogic
 import Lens.Micro.Platform
 import Moves
-
+import AI
 
 main :: IO ()
 main = human applyTHEMove initialGameState
@@ -52,28 +52,28 @@ apply_simple_move s m = case (_status s) of
  Red-> if((head(tail m)) `elem` fRow)
         then s{_message = "Black turn",
                _status = Black ,
-               _redPieces = ((removePiece (_redPieces) (head m))) ,
-               _redKings = ((head(tail m)):(_redKings)) }
+               _redPieces = ((removePiece (_redPieces s) (head m))) ,
+               _redKings = ((head(tail m)):(_redKings s)) }
         else s{_message = "Black turn" , 
                _status = Black ,
-               _redPieces = ((head(tail m)):(removePiece (_redPieces) (head m))) }
+               _redPieces = ((head(tail m)):(removePiece (_redPieces s) (head m))) }
  Black->if((head(tail m)) `elem` lRow)
         then s{ _message = "Red turn" ,
                 _status = Red ,
-                _blackPieces = ((removePiece (_blackPieces) (head m))) ,
-                _blackKings = ((head(tail m)):(_blackKings)) }
+                _blackPieces = ((removePiece (_blackPieces s) (head m))) ,
+                _blackKings = ((head(tail m)):(_blackKings s)) }
         else s{_message = "Red turn " ,
                _status = Red ,
-               _blackPieces =((head(tail m)):(removePiece (_blackPieces) (head m))) }
+               _blackPieces =((head(tail m)):(removePiece (_blackPieces s) (head m))) }
 
 applyK_simple_move::GameState->Move->GameState
-applyK_simple_move s m = case s^.status of
+applyK_simple_move s m = case (_status s) of
  Red-> s{_message = "Black turn" , 
          _status = Black ,
-         _redKings = ((head(tail m)):(removePiece (_redKings) (head m))) }
+         _redKings = ((head(tail m)):(removePiece (_redKings s) (head m))) }
  Black-> s{ _message = "Red turn",
             _status = Red ,
-            _blackKings = ((head(tail m)):(removePiece (_blackKings) (head m))) }
+            _blackKings = ((head(tail m)):(removePiece (_blackKings s) (head m))) }
 
 apply_jump_move::Move->GameState->GameState
 apply_jump_move [] s = s
@@ -93,8 +93,49 @@ apply_jump_move ((x,y):(x2,y2):ms) s
  | ((_status s) == Black) && ((x,y) `elem` (_blackKings s))
   = setMessage $ set status Red $ apply_jump_move ((x2,y2):ms) $ set redKings (removePiece (s^.redKings) (mid_jump_coord (x,y)(x2,y2)) ) $ set redPieces (removePiece (s^.redPieces) (mid_jump_coord (x,y)(x2,y2)) ) $ set blackKings ((x2,y2):(removePiece (s^.blackKings) (x,y) )) s
  |otherwise =  apply_jump_move [] s
+{-
+ | ((_status s) == Red) && ((x,y) `elem` (_redPieces s)) && not(((x2,y2) `elem` fRow))
+  = apply_jump_move ((x2,y2):ms) $ s{_message = "Black turn" ,
+                                     _status = Black,
+                                     _blackKings = (removePiece (_blackKings s) (mid_jump_coord (x,y)(x2,y2)) ) ,
+                                     _blackPieces = (removePiece (_blackPieces s) (mid_jump_coord (x,y)(x2,y2)) ) ,
+                                     _redPieces = ((x2,y2):(removePiece (_redPieces s) (x,y) )) }
+ | ((_status s) == Red) && ((x,y) `elem` (_redPieces s)) && ((x2,y2) `elem` fRow)
+  = apply_jump_move ((x2,y2):ms) $  s{_message = "Black turn" ,
+                                      _status = Black ,
+                                      _blackKings = (removePiece (_blackKings s) (mid_jump_coord (x,y)(x2,y2)) ) ,
+                                      _blackPieces = (removePiece (_blackPieces s) (mid_jump_coord (x,y)(x2,y2)) ) ,
+                                      _redPieces = ((removePiece (_redPieces s) (x,y) )) ,
+                                      _redKings = ((x2,y2):(removePiece (_redKings s) (x,y))) }
+ | ((_status s) == Red) && ((x,y) `elem` (_redKings s))
+  = apply_jump_move ((x2,y2):ms) $ s{_message = "Black turn" ,
+                                     _status = Black , 
+                                     _blackKings = (removePiece (_blackKings s) (mid_jump_coord (x,y)(x2,y2)) ) ,
+                                     _blackPieces =(removePiece (_blackPieces s) (mid_jump_coord (x,y)(x2,y2)) ) ,
+                                     _redKings = ((x2,y2):(removePiece (_redKings s) (x,y) )) }
+ 
+ | ((_status s) == Black) && ((x,y) `elem` (_blackPieces s)) && not(((x2,y2) `elem` lRow))
+  = apply_jump_move ((x2,y2):ms) $ s{_message = "Red turn" ,
+                                     _status = Red ,
+                                     _redKings = (removePiece (_redKings s) (mid_jump_coord (x,y)(x2,y2)) ) ,
+                                     _redPieces = (removePiece (_redPieces s) (mid_jump_coord (x,y)(x2,y2)) ) ,
+                                     _blackPieces = ((x2,y2):(removePiece (_blackPieces s) (x,y) )) }
+ | ((_status s) == Black) && ((x,y) `elem` (_blackPieces s)) && ((x2,y2) `elem` lRow)
+  = apply_jump_move ((x2,y2):ms) $ s{_message = "Red turn" ,
+                                     _status =  Red ,
+                                     _redKings =  (removePiece (_redKings s) (mid_jump_coord (x,y)(x2,y2)) ) ,
+                                     _redPieces = (removePiece (_redPieces s) (mid_jump_coord (x,y)(x2,y2)) ) ,
+                                     _blackPieces =  ((removePiece (_blackPieces s) (x,y) )) ,
+                                     _blackKings = ((x2,y2):(removePiece (_blackKings s) (x,y))) }
+ | ((_status s) == Black) && ((x,y) `elem` (_blackKings s))
+  = apply_jump_move ((x2,y2):ms) $ s{_message = "Red turn" ,
+                                     _status = Red ,
+                                     _redKings = (removePiece (_redKings s) (mid_jump_coord (x,y)(x2,y2)) ) ,
+                                     _redPieces = (removePiece (_redPieces s) (mid_jump_coord (x,y)(x2,y2)) ) ,
+                                     _blackKings = ((x2,y2):(removePiece (_blackKings s) (x,y) )) }
+ |otherwise =  apply_jump_move [] s
 ---------------------------------------
-
+-}
 toogle_status::GameState->GameState
 toogle_status s
  |((not(is_there (_redPieces s))) && (not(is_there (_redKings s)))) || (not(is_there (moves s))) = s{_message = "Gameover",

@@ -274,11 +274,7 @@ bking_jumps s (x,y) rem
  |otherwise = [rem ++ [(x,y)]]
 
 
-islegal::GameState->Move->Bool
-islegal s [] = False
-islegal s m
- | m `elem` (moves s)  = True 
- | otherwise = False
+
 
 --HELPER FUNCTIONS--
 
@@ -448,15 +444,6 @@ removeComponent s (x,y) (x2,y2)
 
 mid_jump_coord::Coord->Coord->Coord
 mid_jump_coord (x,y) (x2,y2) = (((x+x2)`div` 2),((y+y2)`div`2))
-
-
-toogle_status::GameState->GameState
-toogle_status s
- |((not(is_there (_redPieces s))) && (not(is_there (_redKings s)))) || (not(is_there (moves s))) = s{_message = "Gameover",
-                                                                                                     _status = GameOver}
- |((not(is_there (_blackPieces s))) && (not(is_there (_blackKings s)))) || (not(is_there (moves s))) = s{_message = "Gameover",
-                                                                                                         _status = GameOver}
- | otherwise = s
 
 
 firstRow = [(0,0), (1,0),(2,0), (3,0),(4,0) ,(5,0),(6,0), (7,0)]
