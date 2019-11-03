@@ -14,9 +14,9 @@ main = human applyTHEMove initialGameState
  
 applyTHEMove :: Move -> GameState -> GameState
 applyTHEMove m s = case (_status s) of
- Red -> if ((islegal s m)&&(m `elem` (simple_moves s)) &&(is_there (jump_moves s)))
+ Red -> if (not((islegal s m))&&(is_there (jump_moves s)))
          then s{ _message = "There is a jump move available"}
-         else if ((islegal s m)&&(m `elem` (simple_moves s)) && (not(is_there (jump_moves s)))) 
+         else if ((islegal s m)&&(m `elem` (simple_moves s))) 
          then if ((head m)`elem`(_redPieces s)) 
                then toogle_status $ apply_simple_move s m
                else toogle_status $ applyK_simple_move s m
@@ -25,9 +25,9 @@ applyTHEMove m s = case (_status s) of
                   then toogle_status $ apply_jump_move m s
                   else toogle_status $ apply_jump_move m s
         else s{ _message= "Invalid move" }
- Black -> if ((islegal s m)&&(m `elem` (simple_moves s)) &&(is_there (jump_moves s)))
+ Black -> if (not((islegal s m)) &&(is_there (jump_moves s)))
            then s{ _message = "There is a jump move available"}
-           else if ((islegal s m)&&(m `elem` (simple_moves s)) && (not(is_there (jump_moves s)))) 
+           else if ((islegal s m)&&(m `elem` (simple_moves s))) 
            then if ((head m)`elem`(_blackPieces s)) 
                then toogle_status $ apply_simple_move s m
                else toogle_status $ applyK_simple_move s m

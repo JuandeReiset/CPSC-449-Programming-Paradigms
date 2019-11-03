@@ -3,6 +3,9 @@ module AI where
 import GameStructures
 import Moves
 
+data Tree = Leaf | Node Int Tree Tree 
+                  deriving Show
+
 tGameState :: GameState
 tGameState =
   GameState { _blackPieces = bInit
@@ -33,8 +36,38 @@ red_ailist s = map red_heuristic (moves s)
 -}
 black_ai::GameState -> Move
 black_ai s = []
+{-
+-- | Principal Variantions
+data PV = PV !Int [Move] deriving (Show)
 
+instance Eq PV where
+    (PV x _) == (PV y _) = x==y
 
+instance Ord PV where
+    compare (PV x _) (PV y _) = compare x y
+
+negatePV :: PV -> PV
+negatePV (PV x ms) = PV (-x) ms
+
+-- | Minimax with alpha-beta pruning
+-- | extended with score and principal variation 
+minimaxPV :: Tree Int Move -> (Int, [Move])
+minimaxPV bt 
+    = case minimaxPV_ab' 0 [] (PV (-infinity-1) []) (PV (infinity+1) []) bt of
+        PV v ms -> (v,ms)
+
+-- | first parameter determines if we negate children scores
+-- | minimaxPV_ab' :: (Num a, Ord a) => Int -> [m] -> a -> a  -> GameTree a m -> (a, [m])
+minimaxPV_ab' depth ms a b (Tree x []) = a `max` PV x (reverse ms) `min` b
+minimaxPV_ab' depth ms a b (Tree _ branches) = cmx a b branches
+    where cmx a b [] = a
+          cmx a b ((m,t) : branches) 
+              | a'==b = a'
+              | otherwise = cmx a' b branches
+              where a'| odd depth = negatePV $ minimaxPV_ab' (1+depth) (m:ms) (negatePV b) (negatePV a) t
+                      | otherwise = minimaxPV_ab' (1+depth) (m:ms) a b t
+
+-}
 red_heuristic::GameState -> Int
 red_heuristic s
  | (_blackPieces s) == [] && (_blackKings s) == []
