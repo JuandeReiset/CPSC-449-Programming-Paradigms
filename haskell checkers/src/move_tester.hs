@@ -1,4 +1,4 @@
-module Main where
+module Maintest where
 
 import Moves
 import GameStructures
