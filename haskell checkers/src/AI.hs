@@ -1,7 +1,9 @@
 module AI where
 
-import GameStructures
+--import GameStructures
+import GameLogic
 import Moves
+import ApplyMove
 
 data Tree = Leaf | Node Int Tree Tree 
                   deriving Show
@@ -29,67 +31,76 @@ rInit = [ (0,7), (2,7), (4,7), (6,7)
 
 
 red_ai::GameState -> Move 
-red_ai s = []
+red_ai s = extractMove s (minmax s 5) (moves s)
+
 {-
 red_ailist::GameState -> [int]
 red_ailist s = map red_heuristic (moves s)
 -}
 black_ai::GameState -> Move
-black_ai s = []
+black_ai s = extractMove s (minmax s 5) (moves s)
+
+extractMove::GameState->Int->[Move]->Move
+extractMove s heuristic (mov:[]) = mov  
+extractMove s heuristic (mov:xs)
+ | (heuristic == (red_heuristic (applyTHEMove mov s)))
+  = mov
+ | otherwise = extractMove s heuristic xs
+
+minmax::GameState -> Int ->  Int
+minmax s depth
+ | (depth == 0) || (_status s) == GameOver
+  = red_heuristic s
+ | (_status s) == Red
+  = maxEval s (moves s) depth (-3000)
+ | (_status s ) == Black
+  = minEval s (moves s) depth 3000
 {-
--- | Principal Variantions
-data PV = PV !Int [Move] deriving (Show)
-
-instance Eq PV where
-    (PV x _) == (PV y _) = x==y
-
-instance Ord PV where
-    compare (PV x _) (PV y _) = compare x y
-
-negatePV :: PV -> PV
-negatePV (PV x ms) = PV (-x) ms
-
--- | Minimax with alpha-beta pruning
--- | extended with score and principal variation 
-minimaxPV :: Tree Int Move -> (Int, [Move])
-minimaxPV bt 
-    = case minimaxPV_ab' 0 [] (PV (-infinity-1) []) (PV (infinity+1) []) bt of
-        PV v ms -> (v,ms)
-
--- | first parameter determines if we negate children scores
--- | minimaxPV_ab' :: (Num a, Ord a) => Int -> [m] -> a -> a  -> GameTree a m -> (a, [m])
-minimaxPV_ab' depth ms a b (Tree x []) = a `max` PV x (reverse ms) `min` b
-minimaxPV_ab' depth ms a b (Tree _ branches) = cmx a b branches
-    where cmx a b [] = a
-          cmx a b ((m,t) : branches) 
-              | a'==b = a'
-              | otherwise = cmx a' b branches
-              where a'| odd depth = negatePV $ minimaxPV_ab' (1+depth) (m:ms) (negatePV b) (negatePV a) t
-                      | otherwise = minimaxPV_ab' (1+depth) (m:ms) a b t
-
+minmaxblack::GameState -> Int ->  Int
+minmaxblack s depth
+ | (depth == 0) || (_status s) == GameOver
+  = black_heuristic s
+ | (_status s) == Black
+  = maxrEval s (moves s) depth (-3000)
+ | (_status s ) == Red
+  = minrEval s (moves s) depth 3000
 -}
+maxEval::GameState ->[Move]-> Int -> Int -> Int
+maxEval s [] depth maxv = maxv
+maxEval s (mov:xs) depth maxv = max (max maxv eval) (maxEval s xs depth maxv)
+                      where eval = minmax (applyTHEMove mov s) (depth-1)
+
+
+
+minEval:: GameState -> [Move]->Int-> Int -> Int
+minEval s [] depth minv = minv
+minEval s (mov:xs)  depth minv = min (min minv eval) (minEval s xs depth minv)
+                      where eval = minmax (applyTHEMove mov s) (depth-1)
+
+
+
 red_heuristic::GameState -> Int
 red_heuristic s
  | (_blackPieces s) == [] && (_blackKings s) == []
-  = 10000
+  = 3000
  | (_redPieces s) == [] && (_redKings s) == []
-  = (-10000)
+  = (-3000)
  |otherwise = (count_elem (_redPieces s)  0) - 
                (count_elem (_blackPieces s)  0) + 
                2*((count_elem (_redKings s)  0) -
                (count_elem (_blackKings s) 0))
-
+{-
 black_heuristic::GameState -> Int
 black_heuristic s 
  | (_redPieces s) == [] && (_redKings s) == []
-  =  10000
+  =  3000
  | (_blackPieces s) == [] && (_blackKings s) == []                
- = (-10000)
+ = (-3000)
  | otherwise =  (count_elem (_blackPieces s) 0) - 
                 (count_elem (_redPieces s)  0) +  
                 2*((count_elem (_blackKings s)  0) -
                 (count_elem (_redKings s)  0))
-
+-}
 count_elem::[Coord]->Int-> Int
 count_elem (x:xs)  count = count_elem xs  count+1
 count_elem [] count = count

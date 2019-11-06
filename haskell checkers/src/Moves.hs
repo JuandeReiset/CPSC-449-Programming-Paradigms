@@ -285,7 +285,7 @@ is_up_right_empty s (x,y)
   not((x+1, y-1) `elem` (_redKings s)) &&
   not((x+1, y-1) `elem` (_blackPieces s)) &&
   not((x+1, y-1) `elem` (_blackKings s)) &&
-  (x+1 <= 7)
+  (x+1 <= 7) && (y-1 >= 0)
   = True
  |otherwise = False
 
@@ -295,7 +295,7 @@ is_up_left_empty s (x,y)
   not((x-1, y-1) `elem` (_redKings s)) &&
   not((x-1, y-1) `elem` (_blackPieces s)) &&
   not((x-1, y-1) `elem` (_blackKings s)) &&
-  (x-1 >= 0)
+  (x-1 >= 0) && (y-1 >=0)
   = True
  |otherwise = False
 
@@ -305,7 +305,7 @@ is_down_right_empty s (x,y)
   not((x+1, y+1) `elem` (_redKings s)) &&
   not((x+1, y+1) `elem` (_blackPieces s)) &&
   not((x+1, y+1) `elem` (_blackKings s)) &&
-  (x+1 <= 7)
+  (x+1 <= 7) && (y+1 <= 7)
   = True
  |otherwise = False
 
@@ -315,7 +315,7 @@ is_down_left_empty s (x,y)
   not((x-1, y+1) `elem` (_redKings s)) &&
   not((x-1, y+1) `elem` (_blackPieces s)) &&
   not((x-1, y+1) `elem` (_blackKings s)) &&
-  (x-1 >= 0)
+  (x-1 >= 0) && (y+1 <= 7)
   = True
  |otherwise = False
 ------------------------------------------

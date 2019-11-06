@@ -6,12 +6,15 @@ import GameLogic
 import Lens.Micro.Platform
 import Moves
 import AI
+import ApplyMove
 
 main :: IO ()
-main = human applyTHEMove initialGameState
+--main = human applyTHEMove initialGameState
+main = aiTest red_ai black_ai applyTHEMove initialGameState
 --main = moves initialGameState
 --main = tui
  
+ {-
 applyTHEMove :: Move -> GameState -> GameState
 applyTHEMove m s = case (_status s) of
  Red -> if (not((islegal s m))&&(is_there (jump_moves s)))
@@ -150,4 +153,4 @@ toogle_status s
 fRow = [(0,0), (1,0),(2,0), (3,0),(4,0) ,(5,0),(6,0), (7,0)]
 lRow  = [ (0,7), (1,7),(2,7),(3,7), (4,7), (5,7),(6,7), (7,7)]
 
-
+-}

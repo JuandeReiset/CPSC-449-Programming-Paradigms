@@ -11,18 +11,22 @@
   size: 1728
   modtime: 1572243695
 /home/grantmyth/CPSC-449-Programming-Paradigms/haskell checkers/tui.cabal:
-  hash: 13ad774994181707368fcabf6a3d8d32552882502daed955c756aa39aaccad01
-  size: 1145
-  modtime: 1572746179
+  hash: ae1d8a6f1f4888d1406dd0c28053d0875ae15588250689d8221768faeda306d3
+  size: 1161
+  modtime: 1572935923
 /home/grantmyth/CPSC-449-Programming-Paradigms/haskell checkers/src/Moves.hs:
-  hash: fbc1ccaab4c7696b71a3cadfa688b3b139becfbc6ed541d1f1cef1b47fb25bc7
-  size: 22903
-  modtime: 1572746414
+  hash: 1251bee70f6d54050f485fb092a428e2934693d0f28f5c3925bec4617c1bdd5c
+  size: 22958
+  modtime: 1572762490
 /home/grantmyth/CPSC-449-Programming-Paradigms/haskell checkers/src/Checkers.hs:
   hash: 0c01b5da0202978a16647b8709a58da9fa9eae31242928fc17bb74eee34d38ba
   size: 10243
   modtime: 1571855067
+/home/grantmyth/CPSC-449-Programming-Paradigms/haskell checkers/src/ApplyMove.hs:
+  hash: e4a44905fc99f25f0aaaa8aa7b64207bdda2b1d67bffba07eaf80175ea680f79
+  size: 9445
+  modtime: 1573002851
 /home/grantmyth/CPSC-449-Programming-Paradigms/haskell checkers/src/AI.hs:
-  hash: e928df37f7f31c38af41f405c0c1b6e02d638173ecf97da3a37b032a48778fbf
-  size: 2789
-  modtime: 1572755577
+  hash: d58a75c132829881dc5ea87a70c3d7b97e3d0e5353ccfa3b1628eb61b362e1c1
+  size: 2955
+  modtime: 1573002881
