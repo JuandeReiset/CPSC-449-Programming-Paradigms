@@ -5,9 +5,13 @@ CheckersdeReiset  module (inside "app" folder) calls the following files:
 
 (The main modules derives from the following files)
 AI.hs -> Handles the CPU logic (red_ai and black_ai) (ply depth of 5 & basic heuristic)
+
 Move.hs -> Calculates all possible moves on the board
+
 ApplyMove.hs -> Makes the respective changes to the board when a move is performed
+
 GameLogic.hs -> Contains the game datatypes and lens utilities.
+
 
 (All this sub_modules are found in the src folder)
 
