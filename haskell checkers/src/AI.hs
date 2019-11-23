@@ -47,14 +47,14 @@ extractMove s heuristic (mov:xs)
   = mov
  | otherwise = extractMove s heuristic xs
 
-minmax::GameState -> Int ->  Int
-minmax s depth
+minmax::GameState -> Int ->  Int 
+minmax s depth 
  | (depth == 0) || (_status s) == GameOver
   = red_heuristic s
  | (_status s) == Red
-  = maxEval s (moves s) depth (-3000)
+  = maxEval s (moves s) depth (-3000) 
  | (_status s ) == Black
-  = minEval s (moves s) depth 3000
+  = minEval s (moves s) depth 3000 
 {-
 minmaxblack::GameState -> Int ->  Int
 minmaxblack s depth
