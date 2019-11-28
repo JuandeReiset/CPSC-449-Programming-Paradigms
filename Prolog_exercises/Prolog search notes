@@ -1,0 +1,43 @@
+/*
+Search in prolog
+
+Prolog :often is used for AI applications.
+It implements (no backtracking) depth for search
+
+a) Breath first search
+b) Iterative deepening with (bounded) depth first search
+
+
+COnsider reading for path in a weithred undirected graph
+
+edge(a,5,b).
+edge(b,4,c).
+edge(a,2,f).
+edge(f,1,b).
+
+
+Breath first
+
+Idea: keep an _ of search probes
+A search probe is a path if cast and where you have reached
+ (Reached,Cost,Path)
+ 
+ Path = [(f,b),(a,b)].
+ 
+ After each stage take the least cost probe and develop all the children.
+ Then addd these to the agenda in least cost order.
+ 
+ If you go searchin for a path from a to e then you start with an agenda continuining
+ the single item.
+ (a,o,[])
+ 
+
+*/
+
+bfsearch(Start, grid,(Path,C)) :-
+bsearch(Start, Grid, SOlution,[(Start,0,[]]),
+Solution = (P,C),
+reverse(P,Path).
+
+bsearch(-
+
