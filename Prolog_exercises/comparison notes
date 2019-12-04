@@ -1,0 +1,87 @@
+% Comparisons...
+
+/*
+Haskell vs Prolog
+1) Haskell quite sophisticated (becoming industrial)
+-Type inference]
+-data types
+-lazy evaluation
+-pattern matching
+-based on lamba calculus
+
+Typical haskell
+filter::(a->Bool)->[a]->[a]
+filter p xs = [x| x <- xs, p x]
+
+a)
+map::(a->b)->[a]->[b]
+map f [] = []
+map f (a:as) = (f a):(map f as)
+
+b)map f xs = [f x| x <- xs]
+
+2) PRolog (still quite small)
+
+-arbitrary structures
+-untyped
+-depth first search
+-unification (generally without the occurs check)
+-must common error: it does not terminate
+-light weight language
+
+Prolog
+Cannot pass in predicated to predicates...
+
+So assume we have p(x) as a predicate
+a)
+filterp([],[]).
+filterp([H|T],[H|S]) :- p(H), !, filter (T,s).
+
+filterp([_|T],S):-
+  filter(T,S).
+b)
+filterp(x,y):-
+  findall(z,(member(z,x),p(z)),y).
+
+map([],[]).
+mapf([H|T],[Hf|Tt]) :-
+ f(H,Hf),
+ mapf(T,Tf).
+
+
+///////////////////////////////
+Calculate the resistance of a circuit
+----vvvvvvvvvvvvvvr1----------------vvvvvvr2------
+series
+                r1
+      ------vvvvvvvvvv--------
+------                       ------------
+      -------vvvvvvvvvv-------
+                 r2
+                 parallel
+  Prolog solution               
+  res(Serial(C1,C2),R) :-
+    res(C1,R1),
+    res(C2,R2),
+    R is R1+R2
+    
+   res(parallel(C1,C2),R):-
+     res(C1,R1),
+     res(C2,R2),
+     R is 1/(1/R1  + 1/R2).
+     
+   Haskell
+     data RCirc a = REfactor a
+        | Series (RCirc a) (RCirc a)
+        | Parallel (RCirc a) (RCIrc a)
+     a)   
+    res::RCIrc FLoat -> FLoat
+    res (Resistor r) = r
+    res (Series C1 C2) = res c1 +res c2
+    res (Parallel c1 c1) - !/1/(res c1) + 1*res(c2))
+    
+    b) res = foldC Id (+) (\r1 r2 -> 1/(1/r1 + 1/r2))
+       foldC::(a->C)->(C->C->C)->(C->C->C) -> (RCirc a) -> c
+       foldC b s p (Resistor a) = b a
+     
+*/
